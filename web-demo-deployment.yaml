@@ -14,7 +14,7 @@ spec:
       labels:
         app: web-demo # pod name
     spec:
-      nodeName: worker-node
+      nodeName: worker-server
       containers:
         - name: web-demo # container name
           image: trung010999/web-demo:latest
