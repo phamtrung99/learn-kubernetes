@@ -4,8 +4,6 @@ kind: Ingress #Ingress is outside of cluster, routing request from client to exa
 metadata:
   name: web-demo-ingress
   namespace: space2
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - http:
