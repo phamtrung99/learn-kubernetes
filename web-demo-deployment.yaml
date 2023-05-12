@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-demo-deployment
+  namespace: space2
+spec:
+  replicas: 1 # 1 pods will created
+  selector:
+    matchLabels:
+      app: web-demo
+  template:
+    metadata:
+      labels:
+        app: web-demo # pod name
+    spec:
+      nodeName: worker-node
+      containers:
+        - name: web-demo # container name
+          image: trung010999/web-demo:latest
+          env:
+            - name: DB_MASTER_HOSTS
+              valueFrom: # get from secret
+                secretKeyRef: 
+                  name: web-demo-secret # secret name
+                  key: db-master-hosts # secret key which wanna get value from
+            - name: DB_PORT
+              valueFrom: 
+                secretKeyRef: 
+                  name: web-demo-secret
+                  key: db-port
+            - name: DB_USER
+              valueFrom: 
+                secretKeyRef: 
+                  name: web-demo-secret
+                  key: db-user
+            - name: DB_PASS
+              valueFrom: 
+                secretKeyRef: 
+                  name: web-demo-secret
+                  key: db-pass
+            - name: DB_NAME
+              valueFrom: 
+                secretKeyRef: 
+                  name: web-demo-secret
+                  key: db-name
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 3000
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service # Expose IP to access app from outside of cluster.
+metadata:
+  name: web-demo-service
+  namespace: space2
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000 # container port which was be tranfer request to (by service)
+    name: tcp
+  selector:
+    app: web-demo # pod name which was be tranfer request to (by service)

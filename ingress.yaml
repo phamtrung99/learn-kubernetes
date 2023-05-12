@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress #Ingress is outside of cluster, routing request from client to exactly service we define in above.
+metadata:
+  name: web-demo-ingress
+  namespace: space2
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-demo-service
+            port: 
+              number: 80

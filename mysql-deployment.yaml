@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: space2
+spec:
+  replicas: 1 # 1 pods will created
+  selector:
+    matchLabels:
+      app: mysql-db
+  template:
+    metadata:
+      labels:
+        app: mysql-db 
+    spec: 
+      nodeName: master-server # specify destination node which deploy this pod
+      containers:
+        - name: mysql-db
+          image: mysql:8.0
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "1234"
+          resources:
+            requests:
+              memory: "400Mi"
+              cpu: "100m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+          imagePullPolicy: Always
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: mysql-service
+  namespace: space2
+spec:
+  ports:
+  - port: 80
+    targetPort: 3306 # container port which was be tranfer request to (by service)
+    name: tcp
+  selector:
+    app: mysql-db # pod name which was be tranfer request to (by service)
