@@ -6,16 +6,20 @@ metadata:
   namespace: space2
 spec:
   rules:
-  - http:
+  - host: web.demo.com
+    http:
       paths:
-      - path: /
+      - path: "/"
         pathType: Prefix
         backend:
           service:
             name: web-demo-service
             port: 
               number: 3000
-      - path: /
+  - host: db.demo.com
+    http:
+      paths:
+      - path: "/"
         pathType: Prefix
         backend:
           service:
