@@ -8,8 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
-  - host: 192.168.64.13
-    http:
+  - http:
       paths:
       - path: "/web"
         pathType: Prefix
