@@ -10,17 +10,17 @@ spec:
   rules:
   - http:
       paths:
-      - path: /web
+      - path: /web/
         pathType: Prefix
         backend:
           service:
             name: web-demo-service
             port: 
               number: 80
-      - path: /mysql
-        pathType: Prefix
-        backend:
-          service:
-            name: mysql-service
-            port: 
-              number: 3306
+      # - path: /mysql
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: mysql-service
+      #       port: 
+      #         number: 3306
