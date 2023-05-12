@@ -8,13 +8,13 @@ spec:
   rules:
   - http:
       paths:
-      - path: "/web"
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: web-demo-service
             port: 
-              number: 80
+              number: 3000
       # - path: /mysql
       #   pathType: Prefix
       #   backend:
