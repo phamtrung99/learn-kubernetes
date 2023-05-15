@@ -67,7 +67,7 @@ Access to shell of both server
 
 ``` bash
 sudo apt-get update
-sudo apt install containerd
+sudo apt install -y containerd
 ```
 
  *Check result* : 
@@ -162,8 +162,73 @@ Explain: Because range IP of cluster is 192.168.64.x so we have a master node (I
 
 # III. Deploy first app to k8s
 
-Flow to deploy an app:
+Flow to deploy an app in k8s:
 - Write docker file => build app to image => push to registry (dockerhub, aws, ….) => Access to node, define k8s api resources deployment (yml) and apply.
 
-## 1. Clone 
+## 1. Sample project
+In this example, i deployed two container in two separated node. One container run a basic restful app golang will retrieve data from mysql database which ran in the others container. For simplicity, I put all step needed into a bash scripting file and if you want to know details step, please view this file. 
+Ssh to master-node and clone project in [here](https://github.com/phamtrung99/learn-kubernetes) 
+Run command:
+
+``` bash
+bash resources_deploy.sh
+```
+
+To check again: 
+
+``` bash
+kubectl get all -o wide -n space2
+```
+
+Example result: 
+
+![image][pasted-2023.05.15-11.25.20.png]
+
+Access to mysql db and run migrate data.
+
+```  bash
+kubectl exec -i -t -n [space-name] [pod-name] -c [container-name] -- sh -c bash
+```
+
+Then type: `mysql -p ` with password `1234`
+Copy content of `seed.sql` file to above shell session and run.
+
+Example: 
+![image][pasted-2023.05.15-11.52.44.png]
+
+Check db connection from app container
+
+``` bash
+kubectl logs <pod-name> -c <container-name> 
+```
+
+Example result: 
+![image][pasted-2023.05.15-14.04.14.png]
+
+To delete all resources: 
+
+``` bash
+bash resources_delete.sh
+```
+
+# IV. Usual command
+Below list is some usual basic command when interact with k8s. For more information about any command, please type help suffix `-h` after that command, for example: kubectl get -h. Some resources must specify namespace when retrieve info, so remember use options `-n [space-name]`.
+ 
+ **kubectl get [api-resource-name]:**  get list deployed resources. To get all api-resources name, type `kubectl api-resources`
+Ex: kubectl get pods:  
+
+ **kubectl config view --minify --raw** : view config file of kubernetes, use this config to connect from local UI
+
+ **kubectl create namespace [space-name]**: create namespace
+
+ **kubectl describe [resource-type] [resource-name-prefix]** : detailed description of the selected resources
+Ex: kubectl describe pods/web-demo-development
+
+ **kubectl logs <pod-name> -c <container-name>**:  Access container logs. 
+
+ **k3s kubectl apply -f [api-resources-definition].yaml** : apply deploy resource.
+
+ **kubectl exec -i -t -n [space-name] [pod-name] -c [container-name] -- sh -c bash**: Exec specific container shell.
+ 
+
 
