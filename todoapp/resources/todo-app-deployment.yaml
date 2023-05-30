@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-deployment
+  namespace: space3
+spec:
+  replicas: 1 # 1 pods will created
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app # pod name
+    spec:
+      containers:
+        - name: todo-app # container name
+          image: trung010999/todo-app:latest
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 3000
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service # Expose IP to access app from outside of cluster.
+metadata:
+  name: todo-app-service
+  namespace: space3
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000 # container port which was be tranfer request to (by service)
+    name: tcp
+  selector:
+    app: todo-app # pod name which was be tranfer request to (by service)

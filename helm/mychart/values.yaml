@@ -1,0 +1,9 @@
+dockerRepoName: "trung010999"
+
+webDemo:
+ numberOfWebReplicas: 1
+ label: "web-demo"
+ containerName: "web-demo"
+ appliedNode: "worker-node"
+ dockerImageName: "web-demo:latest"
+

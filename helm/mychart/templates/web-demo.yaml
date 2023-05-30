@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-demo-deployment
+  namespace: space2
+spec:
+  replicas: {{ .Values.webDemo.numberOfWebReplicas }} 
+  # This called Built-in object, ref: https://helm.sh/docs/chart_template_guide/builtin_objects/#helm
+  # above value refer value from ../values.yaml file 
+  selector:
+    matchLabels:
+      app: {{ .Values.webDemo.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.webDemo.label }} 
+    spec:
+      nodeName: {{ .Values.webDemo.appliedNode }}
+      containers:
+        - name: {{ .Values.webDemo.containerName }}  
+          image: {{ printf "%v/%v" .Values.dockerRepoName .Values.webDemo.dockerImageName }}  
+          # I uses Template function in here,
+          # about template function: https://helm.sh/docs/chart_template_guide/functions_and_pipelines/
+          # For example printf function: https://helm.sh/docs/chart_template_guide/function_list/#printf
+          env:
+            - name: DB_MASTER_HOSTS
+              value: "bfvhmczm5hyrslarpbrh-mysql.services.clever-cloud.com"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "u551egbnospslald"
+            - name: DB_PASS
+              value: "u551egbnospslald"
+            - name: DB_NAME
+              value: "bfvhmczm5hyrslarpbrh"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 3000
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-demo-service
+  namespace: space2
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000 
+    name: tcp
+  selector:
+    app: {{ .Values.webDemo.label }} 
