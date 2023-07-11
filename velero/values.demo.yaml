@@ -1,0 +1,22 @@
+image:
+  repository: velero/velero
+  tag: v1.11.0 # check version here: https://github.com/vmware-tanzu/velero/releases
+
+# Labels to Velero deployment
+labels:
+  label: velero
+
+# Annotations to Velero deployment
+annotations:
+  annotation: velero
+
+# Custom resources for velero container
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Others default config in here: https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/values.yaml

@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: offwork-v2-mysql-backup-data
+  namespace: offwork-v2
+  labels:
+    app: offwork-v2-mysql-backup-data
+spec:
+  schedule: "0 16 * * 5" # At 16:00 on Friday every week
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          imagePullSecrets:
+            - name: regcred
+          containers:
+            - name: mysql-dump
+              image: registry.local.exelab.asia/mysql-dump:lastest
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/bash"]
+              #args: ["-c", "mysqldump -h \"$DB_HOST\" -u \"$DB_USER\" -p\"$DB_PASS\" --port $DB_PORT $DB_NAME > dump.sql;aws configure set aws_access_key_id \"$AWS_ACCESS_KEY_ID\"; aws configure set aws_secret_access_key \"$AWS_SECRET_ACCESS_KEY\";aws configure set default.region \"$AWS_REGION_AWS\";aws s3 mv ./dump.sql s3://offwork-dev/db-backups/$(date +%s).sql"]
+              args: 
+                - -c
+                - |
+                  mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS --port $DB_PORT $DB_NAME > dump.sql &&
+                  aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID &&
+                  aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY &&
+                  aws configure set default.region $AWS_REGION_AWS &&
+                  aws s3 mv ./dump.sql s3://offwork-dev/db-backups/$(date +%s)_offwork_backup.sql 
+              env:
+                - name: DB_HOST
+                  value: offwork-v2-mysql
+                - name: DB_PORT
+                  value: "3306"
+                - name: DB_NAME
+                  value: offwork
+                - name: DB_USER
+                  value: offwork
+                - name: DB_PASS
+                  value:  
+                - name: AWS_ACCESS_KEY_ID
+                  value: 
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: 
+                - name: AWS_REGION_AWS
+                  value: ap-southeast-1
+                - name: BUCKET_ID
+                  value: offwork-dev/db-backups

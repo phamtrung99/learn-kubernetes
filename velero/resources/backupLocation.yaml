@@ -1,0 +1,15 @@
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: bsl-aws-s3
+  namespace: velero
+spec:
+  provider: velero.io/aws
+  objectStorage:
+    bucket: offwork-dev
+    prefix: velero_k8s_backups
+  config:
+    region: ap-northeast-1
+    profile: exe-dev
+
+# TODO: config this, authorize fail
